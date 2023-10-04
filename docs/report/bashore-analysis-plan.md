@@ -4,19 +4,27 @@ Author: Colman Bashore
 
 ## Analysis
 
-I will attempt to consolidate the code used to make maps into a function that can 
-be used multiple times.The tm package is used to make several maps throughout the
-procedure with relatively similar inputs. Therefore, my goal is to make a function
-that can be called anytime a map plot needs to be created.
+My goal with my modification to the reproduction of the study is to improve the 
+cartography of all of the maps produced in the study code. My aim is to familiarize
+myself with the tmap package in r and adjust some of the parameters used when producing
+map plots in order to make each map both more legible, and more understandable.
+
+This goal is driven by my perception of many of the maps as difficult to read due
+to over complicated line work and overemphasis of county and state borders instead of
+letting the data shine through. My adjustment to each of the maps will involve adjusting
+line weights and widths through the tmap package and also using the rmapshaper package
+to simplify the state borders such that they cause less of a distraction.
 
 ## Results
 
-Outputs should be the same maps as before, but just derived through a more efficient 
-method. For at least one map, I can run the original code and then run my new 
-code right after and I will be able to see if it produces the same map.
+Changes to the map production code will be visible in the maps themselves that are plotted.
+For the first map I will leave the original code before my adjusted code to show the
+difference in visibility and legibility. From this, the simplification of state borders
+will be quite apparent.
 
 ## Discussion
+If in the new maps, data is more visible then the adjustment will have been successful. 
+Ideally, the state lines will not be over simplified but will no longer be a distraction.
+This is a subjective analysis, but line simplification as well as other adjustments to the
+tmap parameters for each map should result in cleaner, more accessible maps.
 
-I am not sure how many parameters my function will need to take, but it will be
-effective if it can produce the exact same maps but just by calling one function
-instead of writing the same code chunk many times.

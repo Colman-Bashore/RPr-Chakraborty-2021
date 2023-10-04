@@ -2,12 +2,12 @@
 title: "Reproduction of Chakraborty 2021: An intracategorical analysis of COVID-19 and people with disabilities"
 author: "Joseph Holler, Junyi Zhou, Peter Kedron, Drew An-Pham, Derrick Burt, Colman Bashore"
 date: "`r Sys.Date()`"
-output: pdf_document
+output: html_document
 editor_options:
   markdown:
     wrap: sentence
 knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding, output_dir = "../../docs/report") })
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "../../docs") })
 ---
 
 Version 2.1 \| First Created July 7, 2021 \| Updated September 21, 2023
@@ -97,7 +97,7 @@ This reproduction study uses R, including the SpatialEpi package for the Kulldor
 packages <- c(
   "tidycensus", "tidyverse", "downloader", "sf", "classInt", "readr",
   "here", "s2", "pastecs", "tmap", "SpatialEpi", "svDialogs",
-  "geepack", "knitr", "kableExtra", "foreign", "broom", "dotwhisker", "dotenv"
+  "geepack", "knitr", "kableExtra", "foreign", "broom", "dotwhisker", "dotenv", "rmapshaper"
 )
 
 # load and install required packages
@@ -378,7 +378,7 @@ tm_covid_rates <- tm_shape(acs_covid) +
   tm_polygons("covid_rate",
     title = "COVID-19 Cases per 100,000 people\n(22 January 2020 to 1 August 2020)",
     style = "quantile",
-    border.alpha = .2,
+    border.alpha = 0.2,
     lwd = 0.2,
     palette = "Oranges",
   ) +
@@ -393,45 +393,47 @@ tm_covid_rates <- tm_shape(acs_covid) +
 tm_covid_rates
 ```
 
-```{r map-function, message = FALSE}
-map.function <- function(polygons,title,style,palette)
-  tm_function <- tm_shape(acs_covid) +
-    tm_polygons(polygons,
-    title = title,
-    style = style,
-    border.alpha = .2,
-    lwd = 0.2,
-    palette = palette,
+
+
+
+Use an updated cartography method to make the map more accessible
+```{r map-covid-rates-alt, message = FALSE}
+tm_covid_rates <- tm_shape(acs_covid) +
+  tm_polygons("covid_rate",
+    title = "COVID-19 Cases per 100,000 people\n(22 January 2020 to 1 August 2020)",
+    style = "quantile",
+    border.alpha = 0,
+    palette = "Oranges",
   ) +
-  tm_shape(state) +
-    tm_borders("grey", lwd = .5) +
+  tm_shape(state, simplify = .01) +
+    tm_borders("white", lwd = .4) +
   tm_layout(
     legend.position = c("left", "bottom"),
     legend.title.size = 0.8,
     legend.text.size = 0.5
   )
-  tm_function
 
-
-
-map.function("covid rate","COVID-19 Cases per 100,000 people\n(22 January 2020 to 1 August 2020)", "Jenks", "Oranges")
+tm_covid_rates
 ```
+
+
 
 ## Map disability rates
 
 **Unplanned deviation for reproduction**: We also map the spatial distribution of the percent of people with any disability to improve our understanding of the geographic patterns and relationships of between the overarching independent variable (percentage of people with disability) and the dependent variable (COVID-19 incidence rate).
 
+
 ```{r map-disability-rates, message = FALSE}
+# Updated mapping parameters to improve accessibility and communication
 tm_disability_rates <- tm_shape(acs_covid) +
   tm_polygons("dis_pct",
     title = "Percent of People with Disability\n(ACS 2014-2018)",
     style = "quantile",
-    border.alpha = .2,
-    lwd = 0.2,
+    border.alpha = 0,
     palette = "Oranges"
   ) +
-  tm_shape(state) +
-  tm_borders("grey", lwd = .5) +
+  tm_shape(state, simplify = .01)  +
+  tm_borders("white", lwd = .4) +
   tm_layout(
     legend.position = c("left", "bottom"),
     legend.title.size = 0.8,
@@ -440,6 +442,9 @@ tm_disability_rates <- tm_shape(acs_covid) +
 
 tm_disability_rates
 ```
+
+## Interpretation of Cartographic Adjustments
+A few adjustments have been made to the mapping code chunks with the goal of improving visibility and reducing confusion. These adjustments focus mostly on borders and using the tmap package. For the covid cases map, the country borders have been made transparent as there were a lot of distracting artefacts along the more complicated borders. Additionally, the rmapshaper package has been added to use the tmap parameter "simplify." The linework for the state borders has been simplified by a factor of 50, changed from grey to white, and been adjusted from a .5 line width to .4. All of these adjustments serve to reduce artefacts and complexities that are uneccesary. Particularly at county borders that follow rivers and are thus quite complicated, as well as state borders that surround small islands or complicated coastlines. The color of borders changes depending on the map as some maps will have more contrast with a white border and some will benefit from sticking with the grey border. I believe that the adjustments are generally succesful in improving the cartographic quality of the maps using fairly simple adjustments. 
 
 ## Descriptive statistics
 
@@ -881,10 +886,9 @@ tm_spatialepi_clusters <-
           colorNA = NULL,
           title = "SpatialEpi Kulldorff COVID-19 Clusters",
           border.col = "white",
-          lwd = 0.2,
-          border.alpha = 0.2) +
-  tm_shape(state) +
-    tm_borders("grey", lwd = 0.5) +
+          border.alpha = 0) +
+  tm_shape(state, simplify = .01) +
+    tm_borders("grey", lwd = 0.4) +
   tm_layout(
     legend.position = c("left", "bottom"),
     legend.title.size = 0.8,
@@ -965,14 +969,14 @@ tm_spatialepi_local_risk_class <- tm_shape(acs_covid) +
   tm_polygons("loc_class",
     title = "Local Relative Risk Class",
     border.col = "white",
-    border.alpha = .2,
+    border.alpha = .0,
     lwd = 0.2,
     palette = "Oranges",
     style = "cat",
     labels = class_freq$label
   ) +
-  tm_shape(state) +
-  tm_borders("grey", lwd = .5) +
+  tm_shape(state, simplify = .01) +
+  tm_borders("grey", lwd = .4) +
   tm_layout(
     legend.position = c("left", "bottom"),
     legend.title.size = 0.8,
@@ -1004,14 +1008,14 @@ tm_spatialepi_cluster_risk_class <- tm_shape(acs_covid) +
   tm_polygons("cluster_class",
     title = "Cluster Relative Risk Class",
     border.col = "white",
-    border.alpha = .2,
+    border.alpha = .0,
     lwd = 0.2,
     palette = "Oranges",
     style = "cat",
     labels = class_freq$label
   ) +
-  tm_shape(state) +
-  tm_borders("grey", lwd = .5) +
+  tm_shape(state, simplify = .01) +
+  tm_borders("grey", lwd = .4) +
   tm_layout(
     legend.position = c("left", "bottom"),
     legend.title.size = 0.8,
@@ -1153,8 +1157,8 @@ tm_author_clusters <-
               popup.vars = c("fips", "clusterID"),
               colorNA = NULL,
               title = "SaTScan Kulldorff COVID-19 Clusters\nCluster Centers") +
-  tm_shape(state) +
-    tm_borders("grey", lwd = 0.5) +
+  tm_shape(state, simplify = .01) +
+    tm_borders("grey", lwd = 0.4) +
   tm_shape(gini_circle) +
     tm_borders(col = "thistle4") +
     tm_text("NUMBER_LOC", size = 0.5) +
@@ -1295,8 +1299,8 @@ tm_spatialepi_hier <-
     lwd = 0.2,
     border.alpha = 0.3
   ) +
-  tm_shape(state) +
-  tm_borders("grey", lwd = 0.5) +
+  tm_shape(state, simplify = .01) +
+  tm_borders("grey", lwd = 0.4) +
   tm_layout(
     legend.position = c("left", "bottom"),
     legend.title.size = 0.8,
@@ -1340,8 +1344,8 @@ tm_spatialepi_gini <-
     lwd = 0.2,
     border.alpha = 0.3
   ) +
-  tm_shape(state) +
-  tm_borders("grey", lwd = 0.5) +
+  tm_shape(state, simplify = .01) +
+  tm_borders("grey", lwd = 0.4) +
   tm_layout(
     legend.position = c("left", "bottom"),
     legend.title.size = 0.8,
@@ -1821,14 +1825,14 @@ tm_gee_residuals <- tm_shape(gee_resid) +
     title = "Race Model Residuals",
     style = "equal",
     n = 7,
-    border.alpha = .2,
+    border.alpha = .0,
     lwd = 0.2,
     palette = "RdBu",
     legend.hist = FALSE,
     midpoint = 0
   ) +
-  tm_shape(state) +
-    tm_borders("grey", lwd = .5) +
+  tm_shape(state, simplify = .01) +
+    tm_borders("grey", lwd = .4) +
   tm_layout(
     legend.position = c("left", "bottom"),
     legend.title.size = 0.8,
@@ -1884,13 +1888,13 @@ tm_gee_weights <- tm_shape(gee_resid) +
   tm_polygons("w",
     title = "Race Model Weights",
     style = "jenks",
-    border.alpha = .2,
+    border.alpha = .0,
     lwd = 0.2,
     palette = "Oranges",
     legend.hist = FALSE,
   ) +
-  tm_shape(state) +
-    tm_borders("grey", lwd = .5) +
+  tm_shape(state, simplify = .01) +
+    tm_borders("grey", lwd = .4) +
   tm_layout(
     legend.position = c("left", "bottom"),
     legend.title.size = 0.8,
@@ -2087,6 +2091,9 @@ We reiterate Chakraborty's carefully limited interpretation emphasizing county-l
 Interpretation of the results were based on aggregate statistics at the county level and on statistical methods which produce approximate estimates, not inferences.
 Further work is needed to reliably infer relationships between minority PwDs and COVID-19 morbidity and mortality, especially at finer geographic scales.
 
+# Conclusions
+This reproduction attempted to reproduce Chakraborty's study using fully open source software and the goal of verifying results and methods.While our reproduction varied in the methods and computational environments that were used and we had some slightly different results, overall we were able to follow the methodology of Chakraborty. A primary point of disagreement between the two studies was the conceptualization around clustering. This was primarily an issue in the way that Chakraborty's methodology erased local epicenters that were part of a massive cluster such as the American southeast. Therefore, the center of this cluster is a relatively insignificant county. Our methodology attempted to highlight relative risk true epicenters such as Atlanta or Miami. While our results still generally suggest similar patterns of multiple jeopardy for PwD's the reproducibility and methodology of the original study can be questioned. At many points we were forced to deviate from the original methodology. Often this was due to unclear descriptions of particular tools and steps taken. This statement is not intended to discount the scientific impact of this study, but rather emphasize the difficulty and significance of providing clear and unambigous methodological descriptions in science.
+
 ## Rationale for updated report
 
 This is the second version of our reproduction report.
@@ -2096,4 +2103,4 @@ This change prompted us to re-order some content to flow more linearly with the 
 These comparisons led to further insights and research into discrepancies between the original and reproduced Pearsons's correlations between various forms of the Kulldorff spatial scan statistic.
 We also discovered an improved method for comparing the results of generalized linear models by plotting all of the model results on a dot-wisker graph using the dotwhisker package.
 
-# Conclusions
+
