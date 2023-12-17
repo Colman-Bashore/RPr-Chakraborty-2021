@@ -1926,6 +1926,10 @@ ggsave(here("results", "figures", "plot_coefficients.png"), geewhisker_fig)
 ```
 
 # Discussion
+## Final Figures
+
+The final map of Race Model weights demonstrates the significance to the model of several counties at the center of large clusters.
+There are several counties within Florida, Mississippi, Arkansas, and Tennessee that are weighted very heavily in the model but have low populations and don't necessarily make sense as "centers" of clusters but they might have been chosen because the were close to the centroid points of clusters. Comparing this map to the map of residuals reveals some interesting patterns. Many of the counties that are weighted the heaviest also have the highest error. This may indicate that some of the method of weighting may be somewhat flawed especially due to the large amount of COVID prevalence in the south. Overall, there was much more error in the south which may connect to an assumption of spatial heterogeneity and not taking into account the uneven spatial distribution of COVID at the time of the original study. 
 
 ## Bias and threats to validity
 

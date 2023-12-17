@@ -1,4 +1,4 @@
-# Planned revisions to reproduction of ....
+# Revisions to reproduction of Chakraborty et al
 
 Author: Colman Bashore
 
